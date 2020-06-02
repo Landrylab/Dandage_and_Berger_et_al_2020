@@ -1,2 +1,5 @@
 test/*
 .log_
+networks.py
+.log_*
+.ipynb**
