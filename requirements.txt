@@ -1,2 +1,2 @@
-rohan==0.2.3
+rohan==0.2.4
 networkx==2.4

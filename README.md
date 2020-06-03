@@ -16,7 +16,7 @@ Correspondence: christian.landry@bio.ulaval.ca
 
 1. python 3.6
 2. Anaconda package distributor   
-3. [rohan (v0.2.3)](https://pypi.org/project/rohan/0.2.3/)
+3. [rohan (v0.2.3)](https://pypi.org/project/rohan/0.2.4/)
 
 ### Installing python dependencies
 

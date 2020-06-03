@@ -3,3 +3,5 @@ test/*
 networks.py
 .log_*
 .ipynb**
+data/*
+plot/*
