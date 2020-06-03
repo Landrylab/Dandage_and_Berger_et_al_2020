@@ -2,7 +2,7 @@ Source code for
 ## **Frequent assembly of chimeric complexes in the protein interaction network of an interspecies hybrid**  
 
 Rohan Dandage<sup>*1,2,3,4</sup>, Caroline M. Berger<sup>*1,2,3,4</sup>, Isabelle Gagnon-Arsenault<sup>1,2,3,4</sup>, Kyung-Mee Moon<sup>5</sup>, Richard Greg Stacey<sup>5</sup>, Leonard J. Foster<sup>5</sup>, and Christian R. Landry<sup>1,2,3,4</sup>   
-* \* The authors contributed equally to this work   
+\* The authors contributed equally to this work   
 1. Département de Biochimie, Microbiologie et Bio-informatique, Faculté des sciences et de génie, Université Laval, Québec, Québec, G1V 0A6, Canada   
 2. PROTEO, Le réseau québécois de recherche sur la fonction, la structure et l’ingénierie des protéines, Université Laval, Québec, Québec, G1V 0A6, Canada    
 3. Centre de Recherche en Données Massives (CRDM), Université Laval, Québec, Québec, G1V 0A6, Canada   
