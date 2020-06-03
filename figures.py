@@ -259,10 +259,10 @@ def FigureS12(ind,outd):
     savefig(f'{outd}/figures/FigureS12',tight_layout=True,fmts=['png','svg'])
 
 def FigureS13(ind,outd):
-    plt.figure(figsize=[4.5,6],linewidth=5)
+    plt.figure(figsize=[11,7],linewidth=5)
     axs=[
          plt.subplot2grid([3,1],[0,0],2,1,),
-         plt.subplot2grid([3,1],[2,0],1,1,),
+         plt.subplot2grid([3,3],[2,1],1,1,),
         ]
     def plot_schema(ax):
         return plot_schem(f'{ind}/plot/schem_delta_interaction_ortholog_seq_identity.svg',ax=ax,force=False)
@@ -273,7 +273,9 @@ def FigureS13(ind,outd):
             [f(ax=ax) for f in fun]
         else:
             ax=fun(ax=ax)
-    labelsubplots(axes=np.ravel(axs),xoff=0)
+    labelsubplots(axes=np.ravel(axs),xoff=0.1)
+    plt.subplots_adjust(
+        hspace=0.4)
     savefig(f'{outd}/figures/FigureS13',tight_layout=True,fmts=['png','svg'])
 
 def Figure05(ind,outd):
@@ -317,13 +319,14 @@ def FigureS14(ind,outd):
 
 def FigureS15(ind,outd):
     plot_complex_hybrid_parent([globals()[k] for k in ['plot_network_interactions_parent_CPX_554',
-                               'plot_network_interactions_hybrid_CPX_554']])
+                               'plot_network_interactions_hybrid_CPX_554']],
+                              figsize=[8,6])
     savefig(f'{outd}/figures/FigureS15',tight_layout=True,fmts=['png','svg'])
 
 def FigureS16(ind,outd):
     plot_complex_hybrid_parent([globals()[k] for k in ['plot_network_interactions_parent_CPX_1293',
                                 'plot_network_interactions_hybrid_CPX_1293'
-                               ]])
+                               ]],figsize=[8,9])
     savefig(f'{outd}/figures/FigureS16',tight_layout=True,fmts=['png','svg'])
 
 def FigureS17(ind,outd):
@@ -334,7 +337,8 @@ def FigureS17(ind,outd):
 
 def FigureS18(ind,outd):
     plot_complex_hybrid_parent([globals()[k] for k in ['plot_network_interactions_parent_CPX_1276',
-                               'plot_network_interactions_hybrid_CPX_1276']])
+                               'plot_network_interactions_hybrid_CPX_1276']],
+                              figsize=[8,9])
     savefig(f'{outd}/figures/FigureS18',tight_layout=True,fmts=['png','svg'])
 
 def FigureS19(ind,outd):
