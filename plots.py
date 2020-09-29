@@ -126,6 +126,34 @@ def plot_complex_hybrid_parent(funs):
 from rohan.global_imports import *
 
 ## FigureS01:panel0
+def plot_bar_peptides_detected_by_unique_not_unique(plotp="plot/bar_peptides_detected_by_unique_not_unique.png",dplot=None,params=None,ax=None,fig=None,outd=None):
+    plotp,dplot,params=get_plot_inputs(plotp=plotp,dplot=dplot,params=params,outd=f"{dirname(__file__)}");
+    if ax is None:ax=plt.subplot()
+    dplot.set_index('subset\n(total peptides)').loc[:,['unique peptides','non-unique peptides']].plot.barh(stacked=True,ax=ax)
+    ax.legend(bbox_to_anchor=[1,1])
+    ax.set(xlim=[0,100],xlabel='%')
+    dplot['y']=range(len(dplot))
+    dplot.apply(lambda x: ax.text(1,x['y'],f"{x['unique peptides']:.0f}%",color='darkred'),axis=1)
+    dplot.apply(lambda x: ax.text(100,x['y'],f"{x['non-unique peptides']:.0f}%",color='gray',ha='right'),axis=1)
+    return ax
+
+
+## FigureS01:panel1
+def plot_bar_proteins_detected_by_unique_not_unique(plotp="plot/bar_proteins_detected_by_unique_not_unique.png",dplot=None,params=None,ax=None,fig=None,outd=None):
+    plotp,dplot,params=get_plot_inputs(plotp=plotp,dplot=dplot,params=params,outd=f"{dirname(__file__)}");
+    if ax is None:ax=plt.subplot()
+    dplot.set_index('subset\n(total proteins detected)').loc[:,['detected by\nunique peptides','detected\nexclusively by\nnon-unique peptides']].plot.barh(stacked=True,ax=ax)
+    ax.legend(bbox_to_anchor=[1,1])
+    ax.set(xlim=[0,100],xlabel='%')
+    dplot['y']=range(len(dplot))
+    dplot.apply(lambda x: ax.text(1,x['y'],"{:.0f}%".format(x['detected by\nunique peptides']),
+    color='darkred'),axis=1)
+    dplot.apply(lambda x: ax.text(100,x['y'],"{:.0f}%".format(x['detected\nexclusively by\nnon-unique peptides']),
+    color='gray',ha='right'),axis=1)
+    return ax
+
+
+## FigureS01:panel2
 def plot_hist_orthologs_dissimilar_peptides_per_protein__Jaccard_distance___(plotp="plot/hist_orthologs_dissimilar_peptides_per_protein__Jaccard_distance___.png",dplot=None,params=None,ax=None,fig=None,outd=None):
     plotp,dplot,params=get_plot_inputs(plotp=plotp,dplot=dplot,params=params,outd=f"{dirname(__file__)}");
     if ax is None:ax=plt.subplot()
@@ -137,7 +165,7 @@ def plot_hist_orthologs_dissimilar_peptides_per_protein__Jaccard_distance___(plo
     return ax
 
 
-## FigureS01:panel1
+## FigureS01:panel3
 def plot_hist_orthologs_protein_sequence_divergence____(plotp="plot/hist_orthologs_protein_sequence_divergence____.png",dplot=None,params=None,ax=None,fig=None,outd=None):
     plotp,dplot,params=get_plot_inputs(plotp=plotp,dplot=dplot,params=params,outd=f"{dirname(__file__)}");
     if ax is None:ax=plt.subplot()
@@ -272,12 +300,16 @@ def plot_scatter_interaction_score_distance_proteasome(plotp="plot/scatter_inter
     plotp,dplot,params=get_plot_inputs(plotp=plotp,dplot=dplot,params=params,outd=f"{dirname(__file__)}");
     if ax is None:ax=plt.subplot()
     from rohan.dandage.plot.scatter import plot_reg
-    ax=plot_reg(dplot,'distance $\AA$','interaction score',scafmt='sca',
+    ax=plot_reg(dplot,'distance $\AA$','interaction score',
+    scafmt='sca',
     title_stat=True,
     params_scatter={'color':'#d24043'},
     ax=ax,trendline_lowess=True)
+    ax.scatter(dplot.loc[dplot['interaction bool biogrid direct interaction'],'distance $\AA$'], 
+    dplot.loc[dplot['interaction bool biogrid direct interaction'],'interaction score'], 
+    s=80, facecolors='none', edgecolors='k',label='direct PPIs')
+    ax.legend(loc=1,frameon=True)
     ax.set_ylim(-0.05,1.05)
-    ax.set_xlabel(ax.get_xlabel().replace("$\AA$","($\AA$)"))
     from rohan.dandage.plot.ax_ import format_ticklabels
     ax=format_ticklabels(ax)
     from rohan.dandage.plot.ax_ import set_logo
@@ -289,13 +321,27 @@ def plot_scatter_interaction_score_distance_proteasome(plotp="plot/scatter_inter
 def plot_scatter_protein_abundance_db(plotp="plot/scatter_protein_abundance_db.png",dplot=None,params=None,ax=None,fig=None,outd=None):
     plotp,dplot,params=get_plot_inputs(plotp=plotp,dplot=dplot,params=params,outd=f"{dirname(__file__)}");
     if ax is None:ax=plt.subplot()
-    from rohan.dandage.plot.scatter import plot_reg
-    ax=plot_reg(dplot.set_index('gene'),'protein abundance\n(log10 scale)','protein abundance\nPAXdb (log10 scale)',
-    title_stat=True,ax=ax)
+    from rohan.dandage.plot.scatter import plot_scatter
+    ax=plot_scatter(dplot,
+    colx='protein abundance\n(log10 scale)',
+    coly='protein abundance\nppm (log10 scale)',
+    colz=None,
+    kind='hexbin',
+    trendline_method='poly',
+    stat_method="spearman",
+    bootstrapped=False,
+    params_plot={},
+    cmap='Reds',label_colorbar=None,
+    gridsize=25,
+    params_plot_trendline={},
+    params_set_label={'title':True},
+    ax=ax,)
     ax.set_ylabel(ax.get_ylabel().replace('PAXdb ',''))
     from rohan.dandage.plot.ax_ import format_ticklabels
     ax=format_ticklabels(ax)
     from rohan.dandage.plot.ax_ import set_logo
+    ax.set(xlim=[0.4,3.25],
+    ylim=[1.25,3.75])
     set_logo(imp=f"{dirname(__file__)}/var/logos/Scer.svg.png",size=0.2,ax=ax)
     return ax
 
@@ -383,7 +429,6 @@ def plot_circle_complexes_hybrid(plotp="plot/circle_complexes_hybrid.png",dplot=
     'parent datum':'complex size',
     'parent color':'idx',
     'child id':'species name interactor',
-    'child color':'median interaction score per protein',
     }
     lineside2params=plot_circlify(dplot,circvar2col=circvar2col,threshold_side=-0.26,
     cmap_child=get_cmap_subset('binary', vmin=0.05, vmax=0.2, n=10),
@@ -438,7 +483,7 @@ def plot_contour_within_parents__Scer__Scer__within_parents__Suva__Suva__between
 
 
 ## Figure03:panel3
-def plot_line_connections_similarity_interaction_types_ms(plotp="plot/line_connections_similarity_interaction_types_ms.svg",dplot=None,params=None,ax=None,fig=None,outd=None):
+def plot_line_connections_similarity_interaction_types_ms(plotp="plot/line_connections_similarity_interaction_types_ms.png",dplot=None,params=None,ax=None,fig=None,outd=None):
     plotp,dplot,params=get_plot_inputs(plotp=plotp,dplot=dplot,params=params,outd=f"{dirname(__file__)}");
     if ax is None:ax=plt.subplot()
     from matplotlib.lines import Line2D
@@ -455,7 +500,7 @@ def plot_line_connections_similarity_interaction_types_ms(plotp="plot/line_conne
     _=[ax.text(label2loc[k]['xy'][0],
     label2loc[k]['xy'][1]+label2loc[k]['height']*0.5,k,color=label2loc[k]['edgecolor'],va='center',ha='center') for k in ['parents','hybrid']]
     _=[ax.text(label2loc[k]['xy'][0]+label2loc[k]['width']*0.5,
-    label2loc[k]['xy'][1]+label2loc[k]['height'],k,color=label2loc[k]['edgecolor'],va='center',ha='center') for k in ['intralogous PPIs','interlogous PPIs']]
+    label2loc[k]['xy'][1]+label2loc[k]['height'],k,color=label2loc[k]['edgecolor'],va='bottom',ha='center') for k in ['intralogous PPIs','interlogous PPIs']]
     return ax
 
 
@@ -464,10 +509,14 @@ def plot_scatter_interaction_score_interlogous_PPIs_predicted_ms(plotp="plot/sca
     plotp,dplot,params=get_plot_inputs(plotp=plotp,dplot=dplot,params=params,outd=f"{dirname(__file__)}");
     if ax is None:ax=plt.subplot()
     from rohan.dandage.plot.ax_ import set_equallim
-    from rohan.dandage.stat.corr import get_corr_str
+    from rohan.dandage.stat.corr import get_corr
     dplot.groupby('species type',sort=False).apply(lambda df: df.plot.scatter(x=params['colz'],
     y=f"{params['colz']} predicted",alpha=0.1,s=1,
-    **{'color':params['element2color'][df.name],'label':'intralogous PPIs\nin '+df.name+'\n'+get_corr_str(df[params['colz']],df[f"{params['colz']} predicted"],method='spearman').replace('\n',' ')
+    **{'color':params['element2color'][df.name],
+    'label':'intralogous PPIs\nin '+df.name+'\n'+get_corr(df[params['colz']],
+    df[f"{params['colz']} predicted"],
+    method='spearman',
+    bootstrapped=False,ci_type='max',outstr=True).replace('\n',' ')
     },
     ax=ax))
     _, labels = ax.get_legend_handles_labels()
@@ -519,8 +568,8 @@ def plot_heatmap_protein_abundance(plotp="plot/heatmap_protein_abundance.png",dp
     cbar_kws={'label':'protein abundance\n(log10 scale)',"orientation": "horizontal",},
     ax=ax)
     ax.set_xticklabels([])
-    ax.set_yticks([])
-    ax.set_ylabel('proteins')
+    ax.set_yticklabels([])
+    ax.set_ylabel('genes')
     return ax
 
 
@@ -619,7 +668,7 @@ def plot_hist_delta_interaction_score__between_species___within_Suva_(plotp="plo
 
 
 ## Figure04:panel0
-def plot_line_connections_similarity_interaction_types_pca(plotp="plot/line_connections_similarity_interaction_types_pca.svg",dplot=None,params=None,ax=None,fig=None,outd=None):
+def plot_line_connections_similarity_interaction_types_pca(plotp="plot/line_connections_similarity_interaction_types_pca.png",dplot=None,params=None,ax=None,fig=None,outd=None):
     plotp,dplot,params=get_plot_inputs(plotp=plotp,dplot=dplot,params=params,outd=f"{dirname(__file__)}");
     if ax is None:ax=plt.subplot()
     from matplotlib.lines import Line2D
@@ -633,7 +682,7 @@ def plot_line_connections_similarity_interaction_types_pca(plotp="plot/line_conn
     _=[ax.text(label2loc[k]['xy'][0],
     label2loc[k]['xy'][1]+label2loc[k]['height']*0.5,k,color=label2loc[k]['edgecolor'],va='center',ha='center') for k in ['parents','hybrid']]
     _=[ax.text(label2loc[k]['xy'][0]+label2loc[k]['width']*0.5,
-    label2loc[k]['xy'][1]+label2loc[k]['height'],k,color=label2loc[k]['edgecolor'],va='center',ha='center') for k in ['intralogous PPIs']]
+    label2loc[k]['xy'][1]+label2loc[k]['height'],k,color=label2loc[k]['edgecolor'],va='bottom',ha='center') for k in ['intralogous PPIs']]
     return ax
 
 
@@ -673,13 +722,16 @@ def plot_scatter_interaction_score_interlogous_PPIs_predicted_pca(plotp="plot/sc
     plotp,dplot,params=get_plot_inputs(plotp=plotp,dplot=dplot,params=params,outd=f"{dirname(__file__)}");
     if ax is None:ax=plt.subplot()
     from rohan.dandage.plot.ax_ import set_equallim
-    from rohan.dandage.stat.corr import get_corr_str
+    from rohan.dandage.stat.corr import get_corr
     _=dplot.groupby('species type',sort=False).apply(lambda df: df.plot.scatter(x=params['colz'],
     y=f"{params['colz']} predicted",
-    **{'color':params['element2color'][df.name],'label':'intralogous PPIs\nin '+df.name+'\n'+get_corr_str(df[params['colz']],df[f"{params['colz']} predicted"],method='spearman').replace('\n',' ')
+    **{'color':params['element2color'][df.name],'label':'intralogous PPIs\nin '+df.name+'\n'+get_corr(df[params['colz']],
+    df[f"{params['colz']} predicted"],
+    method='spearman',
+    bootstrapped=False,ci_type='max',outstr=True).replace('\n',' ')
     },
     ax=ax))
-    ax.legend(title='predicted from',loc=2,bbox_to_anchor=[1,1])
+    ax.legend(title='predicted from',loc='center left',bbox_to_anchor=[1,0.5])
     ax.axis('scaled');ax.set(**{'xlim':[0,1],'ylim':[0,1]})
     ax=set_equallim(ax,diagonal=True)
     return ax
@@ -707,7 +759,7 @@ def plot_dist_delta_interaction_score_subset_divergence____(plotp="plot/dist_del
 
 
 ## Figure05:panel0
-def plot_dist_predicted_from__predicted_actual__interaction_score_of_interlogous_PPIs_divergence_predicted_ms(plotp="plot/dist_predicted_from__predicted_actual__interaction_score_of_interlogous_PPIs_divergence_predicted_ms.png",dplot=None,params=None,ax=None,fig=None,outd=None):
+def plot_dist_predicted_from_intralogous_PPIs_in__predicted_actual__interaction_score_of_interlogous_PPIs_divergence_predicted_ms(plotp="plot/dist_predicted_from_intralogous_PPIs_in__predicted_actual__interaction_score_of_interlogous_PPIs_divergence_predicted_ms.png",dplot=None,params=None,ax=None,fig=None,outd=None):
     plotp,dplot,params=get_plot_inputs(plotp=plotp,dplot=dplot,params=params,outd=f"{dirname(__file__)}");
     from rohan.dandage.plot.dist import plot_dist_comparison
     if ax is None:ax=plt.subplot()
@@ -736,7 +788,7 @@ def plot_dist_protein_complex_description_interaction_score_ratio_zscore(plotp="
     ax.set_ylabel('')
     ax.text(ax.get_xlim()[0],ax.get_ylim()[1],'low',color='b',ha='left',va='bottom')
     ax.text(ax.get_xlim()[1],ax.get_ylim()[1],'high',color='r',ha='right',va='bottom')    
-    ax.set_xlabel('interation score ratio\n(hybrid/parent)')
+    ax.set_xlabel('interaction score ratio\n(hybrid/parent)')
     return ax
 
 
@@ -748,7 +800,7 @@ def plot_dist_volcano_interaction_score_ratio_zscore_Biological_process(plotp="p
     ax=plot_volcano(dplot,**params,ax=ax,annots_off=0.4,annot_count_max=6)
     ax.text(ax.get_xlim()[0],ax.get_ylim()[1],'low',color='b',ha='left',va='bottom')
     ax.text(ax.get_xlim()[1],ax.get_ylim()[1],'high',color='r',ha='right',va='bottom')
-    ax.set_xlabel('interation score ratio\n(hybrid/parent)')    
+    ax.set_xlabel('interaction score ratio\n(hybrid/parent)')    
     return ax
 
 
@@ -763,11 +815,31 @@ def plot_scatter_proteasome_parent_hybrid(plotp="plot/scatter_proteasome_parent_
     ax=ax)
     ax=set_equallim(ax,diagonal=True)
     ax.grid(True)
-    ax.text(params['annot']['x'],params['annot']['y'],params['annot']['s'])
+    ax.text(params['annot']['x'],params['annot']['y'],params['annot']['s'],
+    ha='center',va='bottom')
     return ax
 
 
 ## FigureS14:panel0
+def plot_dist_paired_interlogous_PPIs_incompatibility(plotp="plot/dist_paired_interlogous_PPIs_incompatibility.png",dplot=None,params=None,ax=None,fig=None,outd=None):
+    plotp,dplot,params=get_plot_inputs(plotp=plotp,dplot=dplot,params=params,outd=f"{dirname(__file__)}");
+    if ax is None:ax=plt.subplot()
+    dplot[params['coly']]=pd.Categorical(dplot[params['coly']],params['order'])
+    from rohan.dandage.plot.dist import plot_dists
+    ax=plot_dists(dplot,**params,
+    xlims=None,
+    cmap='Reds',
+    palette=None,
+    annot_pval=True,
+    annot_n=True,
+    annot_stat=False,
+    params_dist={},
+    params_violin={'scale':'count'},
+    ax=ax)
+    return ax
+
+
+## FigureS15:panel0
 def plot_dist_volcano_interaction_score_ratio_zscore_Molecular_function(plotp="plot/dist_volcano_interaction_score_ratio_zscore_Molecular_function.png",dplot=None,params=None,ax=None,fig=None,outd=None):
     plotp,dplot,params=get_plot_inputs(plotp=plotp,dplot=dplot,params=params,outd=f"{dirname(__file__)}");
     if ax is None:ax=plt.subplot()
@@ -775,11 +847,11 @@ def plot_dist_volcano_interaction_score_ratio_zscore_Molecular_function(plotp="p
     ax=plot_volcano(dplot,**params,ax=ax,annots_off=0.4,annot_count_max=6)
     ax.text(ax.get_xlim()[0],ax.get_ylim()[1],'low',color='b',ha='left',va='bottom')
     ax.text(ax.get_xlim()[1],ax.get_ylim()[1],'high',color='r',ha='right',va='bottom')
-    ax.set_xlabel('interation score ratio\n(hybrid/parent)')    
+    ax.set_xlabel('interaction score ratio\n(hybrid/parent)')    
     return ax
 
 
-## FigureS14:panel1
+## FigureS15:panel1
 def plot_dist_volcano_interaction_score_ratio_zscore_protein_complex(plotp="plot/dist_volcano_interaction_score_ratio_zscore_protein_complex.png",dplot=None,params=None,ax=None,fig=None,outd=None):
     plotp,dplot,params=get_plot_inputs(plotp=plotp,dplot=dplot,params=params,outd=f"{dirname(__file__)}");
     if ax is None:ax=plt.subplot()
@@ -787,11 +859,11 @@ def plot_dist_volcano_interaction_score_ratio_zscore_protein_complex(plotp="plot
     ax=plot_volcano(dplot,**params,ax=ax,annots_off=0.4,annot_count_max=6)
     ax.text(ax.get_xlim()[0],ax.get_ylim()[1],'low',color='b',ha='left',va='bottom')
     ax.text(ax.get_xlim()[1],ax.get_ylim()[1],'high',color='r',ha='right',va='bottom')
-    ax.set_xlabel('interation score ratio\n(hybrid/parent)')    
+    ax.set_xlabel('interaction score ratio\n(hybrid/parent)')    
     return ax
 
 
-## FigureS15:panel0
+## FigureS16:panel0
 def plot_network_interactions_hybrid_CPX_554(plotp="plot/network_interactions_hybrid_CPX_554.png",dplot=None,params=None,ax=None,fig=None,outd=None):
     plotp,dplot,params=get_plot_inputs(plotp=plotp,dplot=dplot,params=params,outd=f"{dirname(__file__)}");
     if ax is None:ax=plt.subplot()
@@ -800,7 +872,7 @@ def plot_network_interactions_hybrid_CPX_554(plotp="plot/network_interactions_hy
     return ax
 
 
-## FigureS15:panel1
+## FigureS16:panel1
 def plot_network_interactions_parent_CPX_554(plotp="plot/network_interactions_parent_CPX_554.png",dplot=None,params=None,ax=None,fig=None,outd=None):
     plotp,dplot,params=get_plot_inputs(plotp=plotp,dplot=dplot,params=params,outd=f"{dirname(__file__)}");
     if ax is None:ax=plt.subplot()
@@ -809,7 +881,7 @@ def plot_network_interactions_parent_CPX_554(plotp="plot/network_interactions_pa
     return ax
 
 
-## FigureS16:panel0
+## FigureS17:panel0
 def plot_network_interactions_hybrid_CPX_1293(plotp="plot/network_interactions_hybrid_CPX_1293.png",dplot=None,params=None,ax=None,fig=None,outd=None):
     plotp,dplot,params=get_plot_inputs(plotp=plotp,dplot=dplot,params=params,outd=f"{dirname(__file__)}");
     if ax is None:ax=plt.subplot()
@@ -818,7 +890,7 @@ def plot_network_interactions_hybrid_CPX_1293(plotp="plot/network_interactions_h
     return ax
 
 
-## FigureS16:panel1
+## FigureS17:panel1
 def plot_network_interactions_parent_CPX_1293(plotp="plot/network_interactions_parent_CPX_1293.png",dplot=None,params=None,ax=None,fig=None,outd=None):
     plotp,dplot,params=get_plot_inputs(plotp=plotp,dplot=dplot,params=params,outd=f"{dirname(__file__)}");
     if ax is None:ax=plt.subplot()
@@ -827,7 +899,7 @@ def plot_network_interactions_parent_CPX_1293(plotp="plot/network_interactions_p
     return ax
 
 
-## FigureS17:panel0
+## FigureS18:panel0
 def plot_network_interactions_hybrid_CPX_3207(plotp="plot/network_interactions_hybrid_CPX_3207.png",dplot=None,params=None,ax=None,fig=None,outd=None):
     plotp,dplot,params=get_plot_inputs(plotp=plotp,dplot=dplot,params=params,outd=f"{dirname(__file__)}");
     if ax is None:ax=plt.subplot()
@@ -836,7 +908,7 @@ def plot_network_interactions_hybrid_CPX_3207(plotp="plot/network_interactions_h
     return ax
 
 
-## FigureS17:panel1
+## FigureS18:panel1
 def plot_network_interactions_parent_CPX_3207(plotp="plot/network_interactions_parent_CPX_3207.png",dplot=None,params=None,ax=None,fig=None,outd=None):
     plotp,dplot,params=get_plot_inputs(plotp=plotp,dplot=dplot,params=params,outd=f"{dirname(__file__)}");
     if ax is None:ax=plt.subplot()
@@ -845,7 +917,7 @@ def plot_network_interactions_parent_CPX_3207(plotp="plot/network_interactions_p
     return ax
 
 
-## FigureS18:panel0
+## FigureS19:panel0
 def plot_network_interactions_hybrid_CPX_1276(plotp="plot/network_interactions_hybrid_CPX_1276.png",dplot=None,params=None,ax=None,fig=None,outd=None):
     plotp,dplot,params=get_plot_inputs(plotp=plotp,dplot=dplot,params=params,outd=f"{dirname(__file__)}");
     if ax is None:ax=plt.subplot()
@@ -854,7 +926,7 @@ def plot_network_interactions_hybrid_CPX_1276(plotp="plot/network_interactions_h
     return ax
 
 
-## FigureS18:panel1
+## FigureS19:panel1
 def plot_network_interactions_parent_CPX_1276(plotp="plot/network_interactions_parent_CPX_1276.png",dplot=None,params=None,ax=None,fig=None,outd=None):
     plotp,dplot,params=get_plot_inputs(plotp=plotp,dplot=dplot,params=params,outd=f"{dirname(__file__)}");
     if ax is None:ax=plt.subplot()
@@ -863,7 +935,7 @@ def plot_network_interactions_parent_CPX_1276(plotp="plot/network_interactions_p
     return ax
 
 
-## FigureS19:panel0
+## FigureS20:panel0
 def plot_network_interactions_hybrid_CPX_1323(plotp="plot/network_interactions_hybrid_CPX_1323.png",dplot=None,params=None,ax=None,fig=None,outd=None):
     plotp,dplot,params=get_plot_inputs(plotp=plotp,dplot=dplot,params=params,outd=f"{dirname(__file__)}");
     if ax is None:ax=plt.subplot()
@@ -872,7 +944,7 @@ def plot_network_interactions_hybrid_CPX_1323(plotp="plot/network_interactions_h
     return ax
 
 
-## FigureS19:panel1
+## FigureS20:panel1
 def plot_network_interactions_parent_CPX_1323(plotp="plot/network_interactions_parent_CPX_1323.png",dplot=None,params=None,ax=None,fig=None,outd=None):
     plotp,dplot,params=get_plot_inputs(plotp=plotp,dplot=dplot,params=params,outd=f"{dirname(__file__)}");
     if ax is None:ax=plt.subplot()

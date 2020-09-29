@@ -5,3 +5,4 @@ networks.py
 .ipynb**
 data/*
 plot/*
+old/*

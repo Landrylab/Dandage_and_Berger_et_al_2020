@@ -22,17 +22,21 @@ def Figure01(ind,outd):
     savefig(f'{outd}/figures/Figure01',tight_layout=True,fmts=['png','svg'])
 
 def FigureS01(ind,outd):
-    fig,axs=plt.subplots(nrows=2,ncols=1,figsize=[4,5],linewidth=5)
+    fig,axs=plt.subplots(nrows=2,ncols=2,figsize=[10,5.5],linewidth=5)
+    axs=np.ravel(axs)
     plot_hist_orthologs_protein_sequence_divergence____(ax=axs[0])
-    plot_hist_orthologs_dissimilar_peptides_per_protein__Jaccard_distance___(ax=axs[1])
-    labelsubplots(axes=axs,xoff=-0.01)
+    plot_hist_orthologs_dissimilar_peptides_per_protein__Jaccard_distance___(ax=axs[2])
+    plot_bar_peptides_detected_by_unique_not_unique(ax=axs[1])
+    plot_bar_proteins_detected_by_unique_not_unique(ax=axs[3])
+    labelsubplots(axes=[axs[0],axs[2],axs[1],axs[3]],
+                  xoff=-0.01,yoff=0.05)
     plt.tight_layout()
     savefig(f'{outd}/figures/FigureS01',tight_layout=True,fmts=['png','svg'])
 
 def FigureS02(ind,outd):
     plt.figure(figsize=[8,8],linewidth=5)
     ax=plt.subplot()
-    plot_schem(f'{ind}/plot/schem02_method_massspec.svg',ax=ax,force=True)
+    plot_schem(f'{ind}/plot/schem02_method_massspec.svg',ax=ax,force=False)
     savefig(f'{outd}/figures/FigureS02',tight_layout=True,fmts=['png','svg'])
 
 def FigureS03(ind,outd):
@@ -52,7 +56,7 @@ def Figure02(ind,outd):
           ]
         [f(ax=ax) for f in funs]
         ax.legend(bbox_to_anchor=[1,1])
-        ax.set_xlim(0.7,0.975)
+        ax.set_xlim(0.5,0.96)
         return ax   
     plt.figure(figsize=[9,10.5],linewidth=5)
     axs=[
@@ -160,7 +164,7 @@ def FigureS06(ind,outd):
     savefig(f'{outd}/figures/FigureS06',tight_layout=True,fmts=['png','svg'])
 
 def FigureS07(ind,outd):
-    plt.figure(figsize=[10,11],linewidth=5)
+    plt.figure(figsize=[10,15],linewidth=5)
     axs=[
         plt.subplot2grid([2,1],[0,0],1,2),
         plt.subplot2grid([2,1],[1,0],1,2),
@@ -287,7 +291,7 @@ def Figure05(ind,outd):
          plt.subplot2grid([14,20],[10,4],4,6),
         ]
     funs=[
-        plot_dist_predicted_from__predicted_actual__interaction_score_of_interlogous_PPIs_divergence_predicted_ms,
+        plot_dist_predicted_from_intralogous_PPIs_in__predicted_actual__interaction_score_of_interlogous_PPIs_divergence_predicted_ms,
         plot_dist_volcano_interaction_score_ratio_zscore_Biological_process,   
         plot_dist_protein_complex_description_interaction_score_ratio_zscore,
         plot_scatter_proteasome_parent_hybrid,
@@ -302,6 +306,12 @@ def Figure05(ind,outd):
     savefig(f'{outd}/figures/Figure05',tight_layout=True,fmts=['png','svg'])
 
 def FigureS14(ind,outd):
+    plt.figure(figsize=[3,3])
+    ax=plt.subplot()
+    plot_dist_paired_interlogous_PPIs_incompatibility(ax=ax)
+    savefig(f'{outd}/figures/FigureS14',tight_layout=True,fmts=['png','svg'])
+
+def FigureS15(ind,outd):
     fig,axs=plt.subplots(nrows=2,ncols=1,figsize=[3,12],sharex=False)
     funs=[
           plot_dist_volcano_interaction_score_ratio_zscore_protein_complex,
@@ -315,33 +325,35 @@ def FigureS14(ind,outd):
     labelsubplots(axes=np.ravel(axs),xoff=0)
     plt.subplots_adjust(
         wspace=0, hspace=0.3)
-    savefig(f'{outd}/figures/FigureS14',tight_layout=True,fmts=['png','svg'])
-
-def FigureS15(ind,outd):
-    plot_complex_hybrid_parent([globals()[k] for k in ['plot_network_interactions_parent_CPX_554',
-                               'plot_network_interactions_hybrid_CPX_554']],
-                              figsize=[8,6])
     savefig(f'{outd}/figures/FigureS15',tight_layout=True,fmts=['png','svg'])
 
 def FigureS16(ind,outd):
-    plot_complex_hybrid_parent([globals()[k] for k in ['plot_network_interactions_parent_CPX_1293',
-                                'plot_network_interactions_hybrid_CPX_1293'
-                               ]],figsize=[8,9])
+    plot_complex_hybrid_parent([globals()[k] for k in ['plot_network_interactions_parent_CPX_554',
+                               'plot_network_interactions_hybrid_CPX_554']],
+                              figsize=[7,9])
     savefig(f'{outd}/figures/FigureS16',tight_layout=True,fmts=['png','svg'])
 
 def FigureS17(ind,outd):
-    plot_complex_hybrid_parent([globals()[k] for k in ['plot_network_interactions_parent_CPX_3207',
-                                'plot_network_interactions_hybrid_CPX_3207',
-                               ]])
+    plot_complex_hybrid_parent([globals()[k] for k in ['plot_network_interactions_parent_CPX_1293',
+                                'plot_network_interactions_hybrid_CPX_1293'
+                               ]],figsize=[7,9])
     savefig(f'{outd}/figures/FigureS17',tight_layout=True,fmts=['png','svg'])
 
 def FigureS18(ind,outd):
-    plot_complex_hybrid_parent([globals()[k] for k in ['plot_network_interactions_parent_CPX_1276',
-                               'plot_network_interactions_hybrid_CPX_1276']],
-                              figsize=[8,9])
+    plot_complex_hybrid_parent([globals()[k] for k in ['plot_network_interactions_parent_CPX_3207',
+                                'plot_network_interactions_hybrid_CPX_3207',
+                               ]],
+                              figsize=[7,9])
     savefig(f'{outd}/figures/FigureS18',tight_layout=True,fmts=['png','svg'])
 
 def FigureS19(ind,outd):
-    plot_complex_hybrid_parent([globals()[k] for k in ['plot_network_interactions_parent_CPX_1323',
-                               'plot_network_interactions_hybrid_CPX_1323']])
+    plot_complex_hybrid_parent([globals()[k] for k in ['plot_network_interactions_parent_CPX_1276',
+                               'plot_network_interactions_hybrid_CPX_1276']],
+                              figsize=[7,9])
     savefig(f'{outd}/figures/FigureS19',tight_layout=True,fmts=['png','svg'])
+
+def FigureS20(ind,outd):
+    plot_complex_hybrid_parent([globals()[k] for k in ['plot_network_interactions_parent_CPX_1323',
+                               'plot_network_interactions_hybrid_CPX_1323']],
+                              figsize=[7,9])
+    savefig(f'{outd}/figures/FigureS20',tight_layout=True,fmts=['png','svg'])
