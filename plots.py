@@ -1,6 +1,9 @@
 from rohan.global_imports import *
 import networkx as nx
 def plot_network(dplot,params,ax=None,title=None,test=False):
+    """
+    Plot the PPI networks within complexes
+    """
     g=nx.from_pandas_edgelist(dplot, **params['params_from_pandas_edgelist'])
     pos=nx.circular_layout(g)
     for nodetype in params['nodetype2draw_networkx_nodes']:
@@ -44,6 +47,9 @@ def plot_network(dplot,params,ax=None,title=None,test=False):
         ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
     return ax
 def sort_nodes_in_dplot(dplot):
+    """
+    Sort the nodes in the network by their names.
+    """
     dplot.loc[:,'sort by']=dplot['interaction id'].apply(lambda x: x.split(' ')[1])
     dplot=dplot.sort_values(by=['sort by'])
     df_=pd.DataFrame({'species name interactor':unique(dplot['species name interactor1'].tolist()+dplot['species name interactor2'].tolist())})
@@ -63,6 +69,9 @@ def plot_interactome_hybrid(dplot,title=None,
                             ax=None,
                             plot=True,
                             test=False):
+    """
+    Plot PPI networks within the protein complexes of hybrid.
+    """
     if not 'species name interactor1' in dplot:
         dplot=dplot.join(dplot['species name interaction id'].str.split('--').apply(pd.Series).rename(columns={i:f"species name interactor{int(i+1)}" for i in [0,1]}))
     if not 'species1 name' in dplot:
@@ -109,6 +118,9 @@ def plot_interactome_hybrid(dplot,title=None,
         return g
     
 def plot_complex_hybrid_parent(funs):
+    """
+    Plot PPI networks within the protein complexes of parental species.
+    """
     complexid2size=read_table(f"{dirname(__file__)}/plot/circle_complexes_hybrid.tsv").set_index('complex id')['complex size'].to_dict()
     complexid=funs[0].__name__.split('_')[-1]
     plt.figure(figsize=[8,(complexid2size[f"CPX-{complexid}"]*1.7)+2])
